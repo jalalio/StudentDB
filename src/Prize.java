@@ -1,12 +1,9 @@
-package studentdatabase;
-
 import java.util.Scanner;
 
 /**
  * A class to represent a Prize
  */
 public class Prize {
-    // todo your code goes here
     private String name;
     private String template;
     private int topicsRequired;

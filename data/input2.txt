@@ -1,0 +1,29 @@
+// Science student
+S,9800123,Smith,John Paul
+R,9800123,BIOL1000,HD,89
+
+// Medicine student
+M,9821010,Sanders,Sam
+R,9821010,MMED1000,DN,90
+R,9821010,PSYC1001,DN,95
+
+// Medicine student
+M,9821011,Spurrier,Nicola
+R,9821011,MMED1000,HD,88
+R,9821011,MMED1904,DN,84
+
+// Medicine student
+M,9821012,Jones,Mary,Chemistry Prize 1998
+R,9821012,MMED1001,HD,97
+
+// Medicine student
+M,9821013,Joe,Lazy
+
+// Medicine student
+M,9821014,Michael,Average
+R,9821014,MMED1000,PS,55
+R,9821014,MMED1001,PS,50
+R,9821014,MMED1002,CR,65
+
+// Arts student
+A,9987654,Howard,John,Politics,Economics

@@ -1,5 +1,3 @@
-package studentdatabase;
-
 import java.util.Scanner;
 
 /**
@@ -39,6 +37,6 @@ public class MedStudent extends Student {
     }
 
     public String writeRecord() {
-        return "Degree: "+degree+"\n"+getPrizes();
+        return getPrizes();
     }
 }

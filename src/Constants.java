@@ -1,5 +1,3 @@
-package studentdatabase;
-
 /**
  * An interface to enable the sharing of constant values
  */

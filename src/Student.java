@@ -1,5 +1,3 @@
-package studentdatabase;
-
 import java.util.Scanner;
 
 /**
@@ -66,7 +64,7 @@ public class Student implements Constants {
     }
 
     public String writeHeader() {
-        return "Academic record for "+givenNames+" "+familyName+" ("+studentID+")\n";
+        return "Academic record for "+givenNames+" "+familyName+" ("+studentID+")\n"+"Degree: "+degree+"\n";
     }
 
     public String writeResults() {
@@ -78,6 +76,6 @@ public class Student implements Constants {
     }
 
     public String writeRecord() {
-        return "Degree: "+degree+"\n";
+        return "";
     }
 }

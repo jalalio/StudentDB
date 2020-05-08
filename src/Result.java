@@ -1,12 +1,9 @@
-package studentdatabase;
-
 import java.util.Scanner;
 
 /**
  * A class to represent a Result
  */
 public class Result {
-    // todo your code goes here
     private String code;
     private String grade;
     private int mark;

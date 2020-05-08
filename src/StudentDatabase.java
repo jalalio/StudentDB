@@ -1,5 +1,3 @@
-package studentdatabase;
-
 import java.util.*;
 
 /**
@@ -46,24 +44,30 @@ public class StudentDatabase implements Constants {
     }
 
     public void awardPrize(String prize, String template, int topicsRequired) {
-        List<Integer> individualTopicMarks = new ArrayList<>();
-        int studentAverageMark = 0;
+        Student student;
+        List<Integer> marks = new ArrayList<>();
+        int averageMark = 0;
         int highestMark = 0;
         MedStudent studentWithHighestMark = null;
         for (int i = 0; i < studentCount; i++) {
-            if(db[i].getDegree().equals("Medicine")) { // find a medical student
-                for(int j = 0; j < db[i].topicCount; j++) {
-                    if(db[i].getCode(j).contains(template)) // match topic
-                        individualTopicMarks.add(db[i].getMark(j)); // add mark
+            student = db[i];
+            if(student.getDegree().equals("Medicine")) { // find a medical student
+                for(int j = 0; j < student.topicCount; j++) {
+                    if(student.getCode(j).contains(template)) // check for matching topic code(s)
+                        marks.add(student.getMark(j)); // tally mark(s)
                 }
-                if(!individualTopicMarks.isEmpty()) {
-                    Collections.sort(individualTopicMarks, Collections.reverseOrder()); // sort marks from highest
-                    for (int j = 0; j < individualTopicMarks.size() && j < topicsRequired; j++)
-                        studentAverageMark += individualTopicMarks.get(j); // tally highest average marks
-                    studentAverageMark = studentAverageMark / individualTopicMarks.size(); // get average mark
-                    if (studentAverageMark > highestMark)
-                        studentWithHighestMark = (MedStudent) db[i];
+                if(marks.size() >= topicsRequired) { // check min topics required achieved
+                    Collections.sort(marks, Collections.reverseOrder()); // sort marks from highest
+                    for (int k = 0; k < topicsRequired; k++)
+                        averageMark += marks.get(k); // tally highest marks achieved in required topic(s)
+                    averageMark = averageMark / topicsRequired; // get highest average mark
+                    if (averageMark > highestMark) { // check if average mark is higher than previous students
+                        studentWithHighestMark = (MedStudent) student; // update the student with the highest mark
+                        highestMark = averageMark; // update the highest mark
+                    }
+                    averageMark = 0;
                 }
+                marks.clear();
             }
         }
         if(studentWithHighestMark != null)

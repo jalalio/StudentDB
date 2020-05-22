@@ -2,52 +2,76 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import studentdatabase.*;
+
+import java.io.*;
+import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
 public class StudentDatabaseTest {
     private StudentDatabase studentDB;
+    private Scanner scan;
+    private String fileName;
+    private File inputFileName;
+    private BufferedReader fileReader;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        scan = new Scanner("data/sample2.txt");
+        fileName = scan.nextLine().trim();
+        inputFileName = new File(fileName);
+        fileReader = new BufferedReader(new FileReader(inputFileName));
+
         studentDB = new StudentDatabase();
-        studentDB = new StudentDatabase();
-        studentDB.addStudent("S,9800123,Smith,John Paul"); // Science student
-        studentDB.addResult("R,9800123,BIOL1000,HD,89");
-        studentDB.addStudent("M,9821010,Sanders,Sam"); // Medicine student
-        studentDB.addResult("R,9821010,MMED1000,DN,90");
-        studentDB.addResult("R,9821010,PSYC1001,DN,95");
-        studentDB.addStudent("M,9821011,Spurrier,Nicola"); // Medicine student
-        studentDB.addResult("R,9821011,MMED1000,HD,88");
-        studentDB.addResult("R,9821011,MMED1904,DN,84");
-        studentDB.addStudent("M,9821012,Jones,Mary,Chemistry Prize 1998"); // Medicine student
-        studentDB.addResult("R,9821012,MMED1001,HD,97");
-        studentDB.addStudent("M,9821013,Joe,Lazy"); // Medicine student
-        studentDB.addStudent("M,9821014,Michael,Average"); // Medicine student
-        studentDB.addResult("R,9821014,MMED1000,PS,55");
-        studentDB.addResult("R,9821014,MMED1001,PS,50");
-        studentDB.addResult("R,9821014,MMED1002,CR,65");
-        studentDB.addStudent("A,9987654,Howard,John,Politics,Economics"); // Arts student
     }
 
     @Test
-    public void testAddStudent() {
+    public void testFileIO() {
+        scan = new Scanner("data/sample1.txt");
+        fileName = scan.nextLine().trim();
+        inputFileName = new File(fileName);
+        try {
+            // we call this method with correct parameters
+            fileReader = new BufferedReader(new FileReader(inputFileName));
+        }
+        catch (Exception e) {
+            fail("method should not fail");
+        }
+
+        scan = new Scanner("data/nosuchfile.txt");
+        fileName = scan.nextLine().trim();
+        inputFileName = new File(fileName);
+        try {
+            // we call this method with wrong parameters
+            fileReader = new BufferedReader(new FileReader(inputFileName));
+            fail("method should fail");
+        }
+        catch (Exception e) {
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testAddStudent() throws Exception {
+        init();
+
+        assertNotNull(studentDB.findStudent("9800123"));
+        assertNotNull(studentDB.findStudent("9821010"));
+        assertNotNull(studentDB.findStudent("9987654"));
+        assertNull(studentDB.findStudent("1234567"));
+        assertNull(studentDB.findStudent("7654321"));
+    }
+
+    @Test
+    public void testFindStudent() throws Exception {
         assertNull(studentDB.findStudent("9800124"));
         studentDB.addStudent("S,9800124,Mooney,Carl");
         assertNotNull(studentDB.findStudent("9800124"));
     }
 
     @Test
-    public void testFindStudent() {
-        studentDB.addStudent("S,9800124,Mooney,Carl");
-        assertNull(studentDB.findStudent("9800000"));
-        assertNotNull(studentDB.findStudent("9800124"));
-    }
-
-    @Test
-    public void testAddResult() {
+    public void testAddResult() throws Exception {
         studentDB.addStudent("S,9800124,Mooney,Carl");
         assertFalse(studentDB.findStudent("9800124").writeResults().contains("ENGR3791"));
         studentDB.addResult("R,9800124,ENGR3791,HD,100");
@@ -55,7 +79,9 @@ public class StudentDatabaseTest {
     }
 
     @Test
-    public void testAwardPrize() {
+    public void testAwardPrize() throws Exception {
+        init();
+
         studentDB.awardPrize("Neuroscience 1 Prize","MMED1904",1);
         assertFalse(studentDB.findStudent("9800123").writeRecord().contains("Neuroscience 1 Prize"));
         assertFalse(studentDB.findStudent("9821010").writeRecord().contains("Neuroscience 1 Prize"));
@@ -64,7 +90,9 @@ public class StudentDatabaseTest {
     }
 
     @Test
-    public void testPrintRecords() {
+    public void testPrintRecords() throws Exception {
+        init();
+
         // divert all System.out statements to output stream.
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         System.setOut(new PrintStream(output));
@@ -87,16 +115,11 @@ public class StudentDatabaseTest {
     }
 
     @Test
-    public void testClearRecords() {
+    public void testClearRecords() throws Exception {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         System.setOut(new PrintStream(output));
 
-        // assert that student records exist
-        studentDB.printRecords();
-        assertFalse(output.toString().isEmpty());
-
-        // reset the output stream to zero
-        output.reset();
+        init();
 
         // call clearRecords method and assert that student records no longer exist
         studentDB.clearRecords();
@@ -110,5 +133,25 @@ public class StudentDatabaseTest {
     @After
     public void tearDown() {
         studentDB.clearRecords();
+    }
+
+    public void init() throws Exception {
+        String s;
+        while ((s = fileReader.readLine()) != null) {
+            if (s.length() > 0)
+                switch (s.charAt(0)) {
+                    case 'A':
+                    case 'M':
+                    case 'S':
+                        studentDB.addStudent(s);
+                        break;
+                    case 'R':
+                        studentDB.addResult(s);
+                        break;
+                    case 'P':
+                    default:
+                        break;
+                }
+        }
     }
 }

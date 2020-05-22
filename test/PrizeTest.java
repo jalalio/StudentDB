@@ -2,6 +2,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import studentdatabase.*;
+
 import static org.junit.Assert.*;
 
 public class PrizeTest {
@@ -9,7 +11,7 @@ public class PrizeTest {
     private StudentDatabase studentDB;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         studentDB = new StudentDatabase();
         studentDB.addStudent("S,9800123,Smith,John Paul"); // Science student
         studentDB.addResult("R,9800123,BIOL1000,HD,89");

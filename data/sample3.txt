@@ -1,0 +1,12 @@
+M,9821012,Jones,Mary,Chemistry Prize 1998
+R,9821012,MMED1000,HD,97
+P,Physics,MMED,1
+P,Physics,MMED,1
+P,Physics,MMED,1
+P,Physics,MMED,1
+P,Physics,MMED,1
+P,Physics,MMED,1
+P,Physics,MMED,1
+P,Physics,MMED,1
+P,Physics,MMED,1
+P,Physics,MMED,1

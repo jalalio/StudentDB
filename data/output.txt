@@ -1,0 +1,33 @@
+Academic record for John Paul Smith (9800123)
+Degree: Science
+BIOL1000 HD 89
+
+Academic record for Sam Sanders (9821010)
+Degree: Medicine
+MMED1000 DN 90
+PSYC1001 DN 95
+
+Academic record for Nicola Spurrier (9821011)
+Degree: Medicine
+MMED1000 HD 88
+MMED1904 DN 84
+
+Academic record for Mary Jones (9821012)
+Degree: Medicine
+Prize: Chemistry Prize 1998
+MMED1001 HD 97
+
+Academic record for Lazy Joe (9821013)
+Degree: Medicine
+
+Academic record for Average Michael (9821014)
+Degree: Medicine
+MMED1000 PS 55
+MMED1001 PS 50
+MMED1002 CR 65
+
+Academic record for John Howard (9987654)
+Degree: Arts
+Major: Politics
+Minor: Economics
+

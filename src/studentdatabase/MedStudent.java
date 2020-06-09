@@ -30,7 +30,10 @@ public class MedStudent extends Student {
             addPrize(scan.next());
     }
 
-    public void addPrize(String s) {
+    public void addPrize(String s) throws Exception {
+        if(prizes[prizes.length - 1] != null) {
+            throw new Exception("StudentID: "+studentID+" Error student has maximum number of prizes");
+        }
         for (int i = 0; i < prizes.length; i++) {
             if(prizes[i] == null) {
                 prizes[i] = s;

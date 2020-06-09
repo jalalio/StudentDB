@@ -1,0 +1,4 @@
+Academic record for John Smith (1234567)
+Degree: Science
+COMP1000 HD 100
+

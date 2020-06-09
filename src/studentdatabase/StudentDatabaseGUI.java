@@ -7,7 +7,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
-public class StudentDatabaseGUI extends JFrame {
+public class StudentDatabaseGUI extends JFrame implements ActionListener, KeyListener {
     private JPanel mainPanel;
     private JLabel headerLabel;
     private JPanel studentDetailsPanel;
@@ -56,6 +56,7 @@ public class StudentDatabaseGUI extends JFrame {
     private ImageIcon errorIcon;
     private ImageIcon successIcon;
     private StudentDatabase studentDB;
+    private static boolean nimbus;
 
     public StudentDatabaseGUI(String title) {
         super(title);
@@ -99,333 +100,28 @@ public class StudentDatabaseGUI extends JFrame {
         this.setContentPane(mainPanel);
         this.pack();
 
-        //------------------------------------------ Action Listeners ------------------------------------------
-        degreeBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JComboBox cb = (JComboBox) e.getSource();
-                String degreeName = (String) cb.getSelectedItem();
-                if(degreeName.equals("Science")) {
-                    artsMajorField.setText(null);
-                    artsMajorField.setEnabled(false);
-                    artsMinorField.setText(null);
-                    artsMinorField.setEnabled(false);
-                    medPrizeField.setText(null);
-                    medPrizeField.setEnabled(false);
-                }
-                else if(degreeName.equals("Medicine")) {
-                    artsMajorField.setText(null);
-                    artsMajorField.setEnabled(false);
-                    artsMinorField.setText(null);
-                    artsMinorField.setEnabled(false);
-                    medPrizeField.setEnabled(true);
-                }
-                else { // if(degreeName.equals("Arts")) {
-                    artsMajorField.setEnabled(true);
-                    artsMinorField.setEnabled(true);
-                    medPrizeField.setText(null);
-                    medPrizeField.setEnabled(false);
-                }
-            }
-        });
+        // Add Action Listeners
+        degreeBox.addActionListener(this);
+        addStudentButton.addActionListener(this);
+        findStudentButton.addActionListener(this);
+        addTopicResultButton.addActionListener(this);
+        findTopicResultButton.addActionListener(this);
+        awardPrizeButton.addActionListener(this);
+        printAllRecordsButton.addActionListener(this);
+        clearAllRecordsButton.addActionListener(this);
 
-        KeyListener keyListener = new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-                statusLabel.setIcon(null);
-                statusLabel.setText("");
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {}
-
-            @Override
-            public void keyReleased(KeyEvent e) {}
-        };
-
-        studentNoField.addKeyListener(keyListener);
-        familyNaField.addKeyListener(keyListener);
-        givenNaField.addKeyListener(keyListener);
-        medPrizeField.addKeyListener(keyListener);
-        artsMajorField.addKeyListener(keyListener);
-        artsMinorField.addKeyListener(keyListener);
-
-        topicCodeField.addKeyListener(keyListener);
-        markField.addKeyListener(keyListener);
-        prizeField.addKeyListener(keyListener);
-        templateField.addKeyListener(keyListener);
-        noTopicsField.addKeyListener(keyListener);
-
-        addStudentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(e.getActionCommand().equals("Enter New Student")) {
-                    clearStudentDetails();
-                    statusLabel.setIcon(null);
-                    statusLabel.setText("");
-                    return;
-                }
-
-                String studentID = studentNoField.getText();
-                String familyName = familyNaField.getText();
-                String givenNames = givenNaField.getText();
-                String degree = degreeBox.getSelectedItem().toString();
-                String prizes = medPrizeField.getText();
-                String major = artsMajorField.getText();
-                String minor = artsMinorField.getText();
-
-                if(studentID.length() != 7 || !studentID.matches("[0-9]+")) {
-                    studentNoField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Student Number entered is invalid!");
-                }
-                else if(studentDB.findStudent(studentID) != null) {
-                    studentNoField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Student Number already exists in the database!");
-                }
-                else if(familyName.isBlank() || !familyName.matches("[a-zA-Z]+")) {
-                    familyNaField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Family Name entered is invalid!");
-                }
-                else if(givenNames.isBlank() || !givenNames.matches("[a-zA-Z -]*")) {
-                    givenNaField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Given Names entered is invalid!");
-                }
-                else {
-                    if(degree.equals("Medicine")) {
-                        try {
-                            studentDB.addStudent("M,"+studentID+","+familyName+","+givenNames+","+prizes);
-                            statusLabel.setIcon(successIcon);
-                            statusLabel.setText("Successfully entered student to the database");
-                            addStudentButton.setText("Enter New Student");
-                        } catch (Exception ex) {
-                            System.err.println("Failed to add Med Student.");
-                            ex.printStackTrace();
-                        }
-                    }
-                    else if(degree.equals("Arts")) {
-                        if(major.isBlank()) {
-                            artsMajorField.requestFocus();
-                            statusLabel.setIcon(errorIcon);
-                            statusLabel.setText("WARNING: Major entered is invalid!");
-                        }
-                        else if(minor.isBlank()) {
-                            artsMinorField.requestFocus();
-                            statusLabel.setIcon(errorIcon);
-                            statusLabel.setText("WARNING: Minor entered is invalid!");
-                        }
-                        else {
-                            try {
-                                studentDB.addStudent("A,"+studentID+","+familyName+","+givenNames+","+major+","+minor);
-                                statusLabel.setIcon(successIcon);
-                                statusLabel.setText("Successfully entered student to the database");
-                                addStudentButton.setText("Enter New Student");
-                            } catch (Exception ex) {
-                                System.err.println("Failed to add Arts Student.");
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
-                    else {
-                        try {
-                            studentDB.addStudent("S,"+studentID+","+familyName+","+givenNames);
-                            statusLabel.setIcon(successIcon);
-                            statusLabel.setText("Successfully entered student to the database");
-                            addStudentButton.setText("Enter New Student");
-                        } catch (Exception ex) {
-                            System.err.println("Failed to add Science Student.");
-                            ex.printStackTrace();
-                        }
-                    }
-                }
-            }
-        });
-
-        findStudentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String studentID = studentNoField.getText();
-                if (studentID.length() != 7 || !studentID.matches("[0-9]+") || studentDB.findStudent(studentID) == null) {
-                    studentNoField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Student Number entered is invalid!");
-                }
-                else {
-                    familyNaField.setText(studentDB.findStudent(studentID).familyName);
-                    givenNaField.setText(studentDB.findStudent(studentID).givenNames);
-                    String degree = studentDB.findStudent(studentID).getDegree();
-                    degreeBox.setSelectedItem(degree);
-                    if(degree.equals("Medicine")) {
-                        medPrizeField.setText(((MedStudent) studentDB.findStudent(studentID)).getPrizes());
-                    }
-                    else if(degree.equals("Arts")) {
-                        artsMajorField.setText(((ArtsStudent) studentDB.findStudent(studentID)).getMajor());
-                        artsMinorField.setText(((ArtsStudent) studentDB.findStudent(studentID)).getMinor());
-                    }
-
-                    statusLabel.setIcon(successIcon);
-                    statusLabel.setText("Successfully found student in the database");
-                }
-            }
-        });
-
-        addTopicResultButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String studentID = studentNoField.getText();
-                String code = topicCodeField.getText();
-                String grade = gradeBox.getSelectedItem().toString();
-                String mark = markField.getText();
-
-                if (studentID.length() != 7 || !studentID.matches("[0-9]+") || studentDB.findStudent(studentID) == null) {
-                    studentNoField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Student Number entered is invalid!");
-                }
-                else if(code.length() != 8 ||
-                        !code.substring(0,4).matches("[a-zA-Z]+") ||
-                        !code.substring(4).matches("[0-9]+")) {
-                    topicCodeField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Topic Code entered is invalid!");
-                }
-                else if(!mark.isBlank()) {
-                    if(mark.matches("[0-9]+") && Integer.parseInt(mark) > 0 && Integer.parseInt(mark) < 100) {
-                        try {
-                            studentDB.addResult("R," + studentID + "," + code + "," + grade + "," + mark);
-                            statusLabel.setIcon(successIcon);
-                            statusLabel.setText("Successfully added student topic results");
-                        } catch (Exception ex) {
-                            System.err.println("Failed to add Topic Result.");
-                            ex.printStackTrace();
-                        }
-                    }
-                    else {
-                        markField.requestFocus();
-                        statusLabel.setIcon(errorIcon);
-                        statusLabel.setText("WARNING: Topic Mark entered is invalid!");
-                    }
-                }
-                else {
-                    try {
-                        studentDB.addResult("R," + studentID + "," + code + "," + grade);
-                        statusLabel.setIcon(successIcon);
-                        statusLabel.setText("Successfully added student topic results");
-                    } catch (Exception ex) {
-                        System.err.println("Failed to add Topic Result.");
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        findTopicResultButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String studentID = studentNoField.getText();
-                String code = topicCodeField.getText();
-
-                if (studentID.length() != 7 || !studentID.matches("[0-9]+") || studentDB.findStudent(studentID) == null) {
-                    studentNoField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Student Number entered is invalid!");
-                }
-                else if(code.length() != 8 ||
-                        !code.substring(0,4).matches("[a-zA-Z]+") ||
-                        !code.substring(4).matches("[0-9]+")) {
-                    topicCodeField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Topic Code entered is invalid!");
-                }
-                else {
-                    Student s = studentDB.findStudent(studentID);
-                    for(int i=0; i < s.getTopicCount(); i++) {
-                        if(s.getCode(i).equals(code)) {
-                            gradeBox.setSelectedItem(s.getGrade(i));
-                            markField.setText(s.getMark(i)+"");
-                            statusLabel.setIcon(successIcon);
-                            statusLabel.setText("Successfully found student topic results");
-                            return;
-                        }
-                    }
-
-                    clearTopicDetails();
-                    topicCodeField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Topic Code entered is invalid!");
-                }
-            }
-        });
-
-        awardPrizeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String prize = prizeField.getText();
-                String template = templateField.getText();
-                String min = noTopicsField.getText();
-
-                if(prize.isBlank()) {
-                    prizeField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Prize Name entered is invalid!");
-                }
-                else if(template.isBlank()) {
-                    templateField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Prize Template entered is invalid!");
-                }
-                else if(!min.matches("[0-9]+") || Integer.parseInt(min) < 1) {
-                    noTopicsField.requestFocus();
-                    statusLabel.setIcon(errorIcon);
-                    statusLabel.setText("WARNING: Prize Number of Topics entered is invalid!");
-                }
-                else {
-                    studentDB.awardPrize(prize,template,Integer.parseInt(min));
-                    statusLabel.setIcon(successIcon);
-                    statusLabel.setText("Successfully awarded prize to students");
-                }
-            }
-        });
-
-        printAllRecordsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // divert all System.out statements to output stream.
-                ByteArrayOutputStream output = new ByteArrayOutputStream();
-                System.setOut(new PrintStream(output));
-
-                // print System.out statements as normal
-                studentDB.printRecords();
-
-                // output to a file
-                String fileContent = output.toString();
-
-                try {
-                    BufferedWriter writer = new BufferedWriter(new FileWriter("data/output.txt"));
-                    writer.write(fileContent);
-                    writer.close();
-                } catch (IOException ex) {
-                    System.err.println("Failed to write record file.");
-                    ex.printStackTrace();
-                }
-
-                // reset to System.out stream.
-                System.setOut(System.out);
-
-                // output to console
-                studentDB.printRecords();
-            }
-        });
-
-        clearAllRecordsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                studentDB.clearRecords();
-            }
-        });
+        // Add Key Listeners
+        studentNoField.addKeyListener(this);
+        familyNaField.addKeyListener(this);
+        givenNaField.addKeyListener(this);
+        medPrizeField.addKeyListener(this);
+        artsMajorField.addKeyListener(this);
+        artsMinorField.addKeyListener(this);
+        topicCodeField.addKeyListener(this);
+        markField.addKeyListener(this);
+        prizeField.addKeyListener(this);
+        templateField.addKeyListener(this);
+        noTopicsField.addKeyListener(this);
     }
 
     public static void main (String[] args) {
@@ -460,6 +156,7 @@ public class StudentDatabaseGUI extends JFrame {
         try {
             for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
+                    nimbus = true;
                     UIManager.setLookAndFeel(info.getClassName());
 //                    SwingUtilities.updateComponentTreeUI(this);
                     break;
@@ -467,6 +164,7 @@ public class StudentDatabaseGUI extends JFrame {
             }
         } catch (Exception e) {
             // If Nimbus is not available, GUI set to default look and feel.
+            nimbus = false;
             System.err.println("Using the default look and feel.");
             e.printStackTrace();
         }
@@ -487,5 +185,350 @@ public class StudentDatabaseGUI extends JFrame {
         topicCodeField.setText(null);
         gradeBox.setSelectedItem("HD");
         markField.setText(null);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getActionCommand().equals("Enter New Student")) {
+            clearStudentDetails();
+            statusLabel.setIcon(null);
+            statusLabel.setText("");
+            return;
+        }
+        if(e.getActionCommand().equals("comboBoxChanged")) {
+            JComboBox cb = (JComboBox) e.getSource();
+            String degreeName = (String) cb.getSelectedItem();
+            if(degreeName.equals("Science")) {
+                artsMajorField.setText(null);
+                artsMajorField.setEnabled(false);
+                artsMinorField.setText(null);
+                artsMinorField.setEnabled(false);
+                medPrizeField.setText(null);
+                medPrizeField.setEnabled(false);
+            }
+            else if(degreeName.equals("Medicine")) {
+                artsMajorField.setText(null);
+                artsMajorField.setEnabled(false);
+                artsMinorField.setText(null);
+                artsMinorField.setEnabled(false);
+                medPrizeField.setEnabled(true);
+            }
+            else { // if(degreeName.equals("Arts")) {
+                artsMajorField.setEnabled(true);
+                artsMinorField.setEnabled(true);
+                medPrizeField.setText(null);
+                medPrizeField.setEnabled(false);
+            }
+        }
+        if(e.getActionCommand().equals("Add Student")) {
+            String studentID = studentNoField.getText();
+            String familyName = familyNaField.getText();
+            String givenNames = givenNaField.getText();
+            String degree = degreeBox.getSelectedItem().toString();
+            String prizes = medPrizeField.getText();
+            String major = artsMajorField.getText();
+            String minor = artsMinorField.getText();
+
+            if(studentID.length() != 7 || !studentID.matches("[0-9]+")) {
+                studentNoField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Student Number entered is invalid!");
+            }
+            else if(studentDB.findStudent(studentID) != null) {
+                studentNoField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Student Number entered already exists!");
+            }
+            else if(familyName.isBlank() || !familyName.matches("[a-zA-Z]+")) {
+                familyNaField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Family Name entered is invalid!");
+            }
+            else if(givenNames.isBlank() || !givenNames.matches("[a-zA-Z -]*")) {
+                givenNaField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Given Names entered is invalid!");
+            }
+            else {
+                if(degree.equals("Medicine")) {
+                    if(!prizes.isEmpty()) {
+                        String[] p = prizes.split("\n");
+                        if(p.length > 10) {
+                            medPrizeField.requestFocus();
+                            statusLabel.setIcon(errorIcon);
+                            statusLabel.setText("WARNING: Medicine Prizes exceeds number limit!");
+                            return;
+                        }
+                        prizes = "";
+                        for(int i = 0; i < p.length - 1; i++) {
+                            prizes += p[i] + ",";
+                        }
+                        prizes += p[p.length - 1];
+                    }
+                    try {
+                        studentDB.addStudent("M,"+studentID+","+familyName+","+givenNames+","+prizes);
+                        statusLabel.setIcon(successIcon);
+                        statusLabel.setText("Successfully entered student to the database");
+                        addStudentButton.setText("Enter New Student");
+                    } catch (Exception ex) {
+                        System.err.println("Failed to add Med Student.");
+                        ex.printStackTrace();
+                    }
+                }
+                else if(degree.equals("Arts")) {
+                    if(major.isBlank()) {
+                        artsMajorField.requestFocus();
+                        statusLabel.setIcon(errorIcon);
+                        statusLabel.setText("WARNING: Major entered is invalid!");
+                    }
+                    else if(minor.isBlank()) {
+                        artsMinorField.requestFocus();
+                        statusLabel.setIcon(errorIcon);
+                        statusLabel.setText("WARNING: Minor entered is invalid!");
+                    }
+                    else {
+                        try {
+                            studentDB.addStudent("A,"+studentID+","+familyName+","+givenNames+","+major+","+minor);
+                            statusLabel.setIcon(successIcon);
+                            statusLabel.setText("Successfully entered student to the database");
+                            addStudentButton.setText("Enter New Student");
+                        } catch (Exception ex) {
+                            System.err.println("Failed to add Arts Student.");
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+                else {
+                    try {
+                        studentDB.addStudent("S,"+studentID+","+familyName+","+givenNames);
+                        statusLabel.setIcon(successIcon);
+                        statusLabel.setText("Successfully entered student to the database");
+                        addStudentButton.setText("Enter New Student");
+                    } catch (Exception ex) {
+                        System.err.println("Failed to add Science Student.");
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        }
+        if(e.getActionCommand().equals("Find Student")) {
+            String studentID = studentNoField.getText();
+            if (studentID.length() != 7 || !studentID.matches("[0-9]+")) {
+                studentNoField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Student Number entered is invalid!");
+            }
+            else if(studentDB.findStudent(studentID) == null) {
+                studentNoField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Student Number entered does not exist!");
+            }
+            else {
+                familyNaField.setText(studentDB.findStudent(studentID).familyName);
+                givenNaField.setText(studentDB.findStudent(studentID).givenNames);
+                String degree = studentDB.findStudent(studentID).getDegree();
+                degreeBox.setSelectedItem(degree);
+                if(degree.equals("Medicine")) {
+                    String prizes = ((MedStudent) studentDB.findStudent(studentID)).getPrizes();
+                    if(!prizes.isEmpty()) {
+                        String[] p = prizes.split("\n");
+                        prizes = "";
+                        for(int i = 0; i < p.length; i++) {
+                            prizes += p[i].substring(p[i].indexOf(' ') + 1) + "\n";
+                        }
+                    }
+                    medPrizeField.setText(prizes);
+                }
+                else if(degree.equals("Arts")) {
+                    artsMajorField.setText(((ArtsStudent) studentDB.findStudent(studentID)).getMajor());
+                    artsMinorField.setText(((ArtsStudent) studentDB.findStudent(studentID)).getMinor());
+                }
+
+                statusLabel.setIcon(successIcon);
+                statusLabel.setText("Successfully found student in the database");
+            }
+        }
+        if(e.getActionCommand().equals("Add Topic Result")) {
+            String studentID = studentNoField.getText();
+            String code = topicCodeField.getText();
+            String grade = gradeBox.getSelectedItem().toString();
+            String mark = markField.getText();
+
+            // Student ID validation and exists in database
+
+            if (studentID.length() != 7 || !studentID.matches("[0-9]+")) {
+                studentNoField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Student Number entered is invalid!");
+            }
+            else if(studentDB.findStudent(studentID) == null) {
+                studentNoField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Student Number entered does not exist!");
+            }
+            else if(code.length() != 8 ||
+                    !code.substring(0,4).matches("[a-zA-Z]+") ||
+                    !code.substring(4).matches("[0-9]+")) {
+                topicCodeField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Topic Code entered is invalid!");
+            }
+            else {
+                Student s = studentDB.findStudent(studentID);
+                for(int i=0; i < s.getTopicCount(); i++) {
+                    if (s.getCode(i).equals(code)) {
+                        statusLabel.setIcon(errorIcon);
+                        statusLabel.setText("WARNING: Topic Code entered already exists!");
+                        return;
+                    }
+                }
+                if(mark.isEmpty()) {
+                    try {
+                        studentDB.addResult("R," + studentID + "," + code + "," + grade);
+                        statusLabel.setIcon(successIcon);
+                        statusLabel.setText("Successfully added student topic results");
+                    } catch (Exception ex) {
+                        System.err.println("Failed to add Topic Result.");
+                        ex.printStackTrace();
+                    }
+                }
+                else if(mark.matches("[0-9]+") &&
+                        Integer.parseInt(mark) >= 0 && Integer.parseInt(mark) <= 100) {
+                    try {
+                        studentDB.addResult("R," + studentID + "," + code + "," + grade + "," + mark);
+                        statusLabel.setIcon(successIcon);
+                        statusLabel.setText("Successfully added student topic results");
+                    } catch (Exception ex) {
+                        System.err.println("Failed to add Topic Result.");
+                        ex.printStackTrace();
+                    }
+                }
+                else {
+                    markField.requestFocus();
+                    statusLabel.setIcon(errorIcon);
+                    statusLabel.setText("WARNING: Topic Mark entered is invalid!");
+                }
+            }
+        }
+        if(e.getActionCommand().equals("Find Topic Result")) {
+            String studentID = studentNoField.getText();
+            String code = topicCodeField.getText();
+
+            if (studentID.length() != 7 || !studentID.matches("[0-9]+")) {
+                studentNoField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Student Number entered is invalid!");
+            }
+            else if(studentDB.findStudent(studentID) == null) {
+                studentNoField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Student Number entered does not exist!");
+            }
+            else if(code.length() != 8 ||
+                    !code.substring(0,4).matches("[a-zA-Z]+") ||
+                    !code.substring(4).matches("[0-9]+")) {
+                topicCodeField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Topic Code entered is invalid!");
+            }
+            else {
+                Student s = studentDB.findStudent(studentID);
+                for(int i=0; i < s.getTopicCount(); i++) {
+                    if(s.getCode(i).equals(code)) {
+                        gradeBox.setSelectedItem(s.getGrade(i));
+                        markField.setText(s.getMark(i)+"");
+                        statusLabel.setIcon(successIcon);
+                        statusLabel.setText("Successfully found student topic results");
+                        return;
+                    }
+                }
+
+                clearTopicDetails();
+                topicCodeField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Topic Code entered is invalid!");
+            }
+        }
+        if(e.getActionCommand().equals("Award Prize")) {
+            String prize = prizeField.getText();
+            String template = templateField.getText();
+            String min = noTopicsField.getText();
+
+            if(prize.isBlank()) {
+                prizeField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Prize Name entered is invalid!");
+            }
+            else if(template.length() < 4 || template.length() > 8 ||
+                    !template.substring(0,4).matches("[a-zA-Z]") ||
+                    !template.substring(4).matches("[0-9]+")) {
+                templateField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Prize Template entered is invalid!");
+            }
+            else if(!min.matches("[0-9]+") || Integer.parseInt(min) < 1) {
+                noTopicsField.requestFocus();
+                statusLabel.setIcon(errorIcon);
+                statusLabel.setText("WARNING: Prize Number of Topics entered is invalid!");
+            }
+            else {
+                try {
+                    studentDB.awardPrize(prize,template,Integer.parseInt(min));
+                    statusLabel.setIcon(successIcon);
+                    statusLabel.setText("Successfully awarded prize to students");
+                } catch (Exception ex) {
+                    System.err.println("Failed to award prize.");
+                    ex.printStackTrace();
+                    statusLabel.setIcon(errorIcon);
+                    statusLabel.setText("WARNING: Prize could not be awarded to student with maximum prizes!");
+                }
+            }
+        }
+        if(e.getActionCommand().equals("Print All Records")) {
+            // divert all System.out statements to output stream.
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            System.setOut(new PrintStream(output));
+
+            // print System.out statements as normal
+            studentDB.printRecords();
+
+            // output to a file
+            String fileContent = output.toString();
+
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter("data/record.txt"));
+                writer.write(fileContent);
+                writer.close();
+            } catch (IOException ex) {
+                System.err.println("Failed to write record file.");
+                ex.printStackTrace();
+            }
+
+            // reset to System.out stream.
+            System.setOut(System.out);
+
+            // output to console
+            studentDB.printRecords();
+        }
+        if(e.getActionCommand().equals("Clear All Records")) {
+            studentDB.clearRecords();
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        // clear status bar
+        statusLabel.setIcon(null);
+        statusLabel.setText("");
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }

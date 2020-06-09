@@ -12,7 +12,7 @@ public class Result {
 
     public Result(Scanner scan) throws Exception {
         scan.useDelimiter(",");
-        code = scan.next();
+        code = scan.next().toUpperCase();
         if(code.isEmpty()) {
             throw new Exception("Topic is not specified");
         }

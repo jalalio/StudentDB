@@ -46,7 +46,7 @@ public class StudentDatabase implements Constants {
         findStudent(scan.next()).addResult(scan);
     }
 
-    public void awardPrize(String prize, String template, int topicsRequired) {
+    public void awardPrize(String prize, String template, int topicsRequired) throws Exception {
         Student student;
         List<Integer> marks = new ArrayList<>();
         int averageMark = 0;
@@ -73,8 +73,9 @@ public class StudentDatabase implements Constants {
                 marks.clear();
             }
         }
-        if(studentWithHighestMark != null)
+        if(studentWithHighestMark != null) {
             studentWithHighestMark.addPrize(prize);
+        }
     }
 
     public void printRecords() {

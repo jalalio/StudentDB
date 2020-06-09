@@ -81,7 +81,7 @@ public class MedStudentTest {
     }
 
     @Test
-    public void testAddPrize() {
+    public void testAddPrize() throws Exception {
         String prize = "Neuroscience 1 Prize";
 
         // check prize does not exist

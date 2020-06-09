@@ -34,7 +34,7 @@ public class PrizeTest {
     }
 
     @Test
-    public void testAwardPrize() {
+    public void testAwardPrize() throws Exception {
         prize.awardPrize(studentDB);
         assertFalse(studentDB.findStudent("9800123").writeRecord().contains("Medicine 1 prize"));
         assertFalse(studentDB.findStudent("9821010").writeRecord().contains("Medicine 1 prize"));

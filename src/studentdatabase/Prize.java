@@ -18,7 +18,7 @@ public class Prize {
         if(name.isEmpty()) {
             throw new Exception("Prize name is not Given");
         }
-        template = scan.next(); // MMED1
+        template = scan.next().toUpperCase(); // MMED1
         if(template.isEmpty()) {
             throw new Exception("Topic requirement for Prize name is not Given");
         }
@@ -28,7 +28,7 @@ public class Prize {
         }
     }
 
-    public void awardPrize(StudentDatabase db) {
+    public void awardPrize(StudentDatabase db) throws Exception {
         db.awardPrize(name, template, topicsRequired);
     }
 }

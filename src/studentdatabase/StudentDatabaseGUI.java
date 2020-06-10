@@ -460,8 +460,8 @@ public class StudentDatabaseGUI extends JFrame implements ActionListener, KeyLis
                 statusLabel.setText("WARNING: Prize Name entered is invalid!");
             }
             else if(template.length() < 4 || template.length() > 8 ||
-                    !template.substring(0,4).matches("[a-zA-Z]") ||
-                    !template.substring(4).matches("[0-9]+")) {
+                    !template.substring(0,4).matches("[a-zA-Z]+") ||
+                    template.length() > 4 && !template.substring(4).matches("[0-9]+")) {
                 templateField.requestFocus();
                 statusLabel.setIcon(errorIcon);
                 statusLabel.setText("WARNING: Prize Template entered is invalid!");

@@ -1,4 +1,6 @@
 # StudentDB
+Version 0.9.3
+
 A **Student Database System** written completely in Java.
 
 ## How to use:
